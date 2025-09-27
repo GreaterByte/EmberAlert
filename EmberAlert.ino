@@ -1,10 +1,23 @@
 /*//----------------------------------------------------------------------
 Made by Cavon Hajimiri 2024
 
+Version 2: Added Capability of Sending Sensor Data to Server via Wifi 
+Version 2 edits by Michael Zhang 9/26/2025
+
 Ember Alert detects forest fires and alerts citizens nearby to allow for their safety as well as the quick elimination of the fire
 This is a simple prototype to demonstrate the effectiveness of multiple small components 
 
 *///----------------------------------------------------------------------
+
+#include <ESP8266WiFi.h>
+#include <ESP8266HTTPClient.h>
+
+// ------------------- Wi-Fi credentials -------------------
+const char* ssid = "WIFI_SSID"; // need to edit to specific WiFi
+const char* password = "WIFI_PASS";
+
+// ------------------- Server endpoint -------------------
+String serverPath = "http://SERVER_IP:5050/receive"; // this will be different for different computers
 
 
 #include "DHT.h" // Library for Temp and Humidity Sensor
@@ -188,7 +201,49 @@ void setup() {
     Serial.println("Waiting a client connection to notify...");
   #endif
 
+  // Connect Wi-Fi
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
 
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("\nConnected to WiFi!");
+
+}
+
+// Wifi Data Transmission Helper Function
+void sendDataViaWifi(float h, float t, float f, float measured_value, float estimated_value, int IR_val) {
+  if (WiFi.status() == WL_CONNECTED) {
+    WiFiClient client;
+    HTTPClient http;
+    http.begin(client, serverPath);
+    http.addHeader("Content-Type", "application/json");
+
+    String jsonData = "{";
+    jsonData += "\"humidity\":" + String(h) + ",";
+    jsonData += "\"temperature_c\":" + String(t) + ",";
+    jsonData += "\"temperature_f\":" + String(f) + ",";
+    jsonData += "\"ir_raw\":" + String(IR_val) + ",";
+    jsonData += "\"ir_measured\":" + String(measured_value) + ",";
+    jsonData += "\"ir_estimated\":" + String(estimated_value);
+    jsonData += "}";
+
+    int httpResponseCode = http.POST(jsonData);
+
+    if (httpResponseCode > 0) {
+      String response = http.getString();
+      Serial.println("Server response: " + response);
+    } else {
+      Serial.print("HTTP Error code: ");
+      Serial.println(httpResponseCode);
+    }
+    http.end();
+  } else {
+    Serial.println("WiFi disconnected");
+  }
 }
 
 void loop() {
@@ -252,6 +307,10 @@ void loop() {
     Serial.print(",");
     Serial.print(estimated_value,4);
     Serial.println();
+
+    // send the data to server
+    sendDataViaWifi(h, t, f, measured_value, estimated_value, IR_val);
+
     /*
     Serial.print(F("Humidity: "));
     Serial.print(h);
