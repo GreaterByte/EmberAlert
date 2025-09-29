@@ -7,9 +7,10 @@ from flask import Flask, request
 app = Flask(__name__)
 
 @app.route("/receive", methods=["POST"])
-def receive_data():
+def receive_data(): 
     data = request.json
-    print("Received sensor data:", data) # print to console
+    print("Received sensor data: ", data) # print to console
+    
     return {"status": "ok"}  # reply/confirm received
 
 if __name__ == "__main__":
