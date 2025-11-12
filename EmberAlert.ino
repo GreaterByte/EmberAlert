@@ -9,8 +9,8 @@ This is a simple prototype to demonstrate the effectiveness of multiple small co
 
 *///----------------------------------------------------------------------
 
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 // ------------------- Wi-Fi credentials -------------------
 const char* ssid = "WIFI_SSID"; // need to edit to specific WiFi

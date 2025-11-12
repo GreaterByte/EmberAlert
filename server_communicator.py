@@ -3,13 +3,20 @@ import json
 
 url = "http://127.0.0.1:5050/receive"
 
+humidity = input("Enter humidity: ")
+temperature_c = input("Enter temperature_c: ")
+temperature_f = input("Enter temperature_f: ")
+ir_raw = input("Enter ir_raw: ")
+ir_measured = input("Enter ir_measured: ")
+ir_estimated = input("Enter ir_estimated: ")
+
 data = {
-    "humidity": 67,
-    "temperature_c": 41,
-    "temperature_f": 105.8,
-    "ir_raw": 67.67,
-    "ir_measured": 41,
-    "ir_estimated": 44
+    "humidity": humidity,
+    "temperature_c": temperature_c,
+    "temperature_f": temperature_f,
+    "ir_raw": ir_raw,
+    "ir_measured": ir_measured,
+    "ir_estimated": ir_estimated
 }
 
 response = requests.post(url, json = data)
