@@ -9,20 +9,20 @@ This is a simple prototype to demonstrate the effectiveness of multiple small co
 
 *///----------------------------------------------------------------------
 
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include "WiFi.h"
+#include <HTTPClient.h>
 
 // ------------------- Wi-Fi credentials -------------------
-const char* ssid = "WIFI_SSID"; // need to edit to specific WiFi
-const char* password = "WIFI_PASS";
+const char* ssid = "Michael's iPhone"; // need to edit to specific WiFi
+const char* password = "password123";
 
 // ------------------- Server endpoint -------------------
-String serverPath = "http://SERVER_IP:5050/receive"; // this will be different for different computers
+String serverPath = "http://127.0.0.1:5050/receive"; // this will be different for different computers
 
 
 #include "DHT.h" // Library for Temp and Humidity Sensor
 
-#define BLE_SETUP
+//#define BLE_SETUP
 
 #define DHT_PIN 2     // Digital pin connected to the DHT Sensor
 #define IR_PIN 4      // Digital pin connected to the IR Sensor
@@ -146,6 +146,8 @@ void setup() {
   Serial.begin(115200);
   Serial.println(F("DHTxx test!"));
 
+  Serial.println("Boot successful, entering setup...");
+
   // Set the output pins
   pinMode(IN1, OUTPUT);
   pinMode(IN2, OUTPUT);
@@ -204,13 +206,21 @@ void setup() {
   // Connect Wi-Fi
   WiFi.begin(ssid, password);
   Serial.print("Connecting to WiFi");
-
-  while (WiFi.status() != WL_CONNECTED) {
+  int retries = 0;
+  while (WiFi.status() != WL_CONNECTED && retries < 30) {
     delay(500);
     Serial.print(".");
+    retries++;
   }
 
-  Serial.println("\nConnected to WiFi!");
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n✅ Connected to WiFi!");
+    Serial.print("IP address: ");
+    Serial.println(WiFi.localIP());
+  } else {
+    Serial.println("\n❌ Failed to connect to WiFi.");
+    
+  }
 
 }
 
@@ -250,81 +260,78 @@ void loop() {
   // Wait a few seconds between measurements.
   //digitalWrite(LED_PIN, HIGH);
   //delay(2000);
-  int IR_val = AnalogRead(IR_PIN);
-  //Serial.println(val);
-  //digitalWrite(LED_PIN, LOW);
+  // int IR_val = analogRead(IR_PIN);
+  // //Serial.println(val);
+  // //digitalWrite(LED_PIN, LOW);
 
-  //Digital IR_val is 1 when no flame and 0 when there is a flame
-  if (estimated_value >= Kalman_Threshold){//Checking Kalman filter value 
-    digitalWrite(LED_PIN, HIGH);
-    digitalWrite(IN1, LOW);
-    digitalWrite(IN2, HIGH);
-  }
-  else{
-    digitalWrite(LED_PIN, LOW);
-    digitalWrite(IN1, HIGH);
-    digitalWrite(IN2, HIGH);
-  }
+  // if (millis()-t1 >= 250){
+  //   //int CMON_out = analogRead(CMON_PIN);
+  //   //Serial.println(CMON_out);
+  //   // Reading temperature or humidity takes about 250 milliseconds!
+  //   // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  //   float h = dht.readHumidity();
+  //   // Read temperature as Celsius (the default)
+  //   float t = dht.readTemperature();
+  //   // Read temperature as Fahrenheit (isFahrenheit = true)
+  //   float f = dht.readTemperature(true);
+
+  //   // Check if any reads failed and exit early (to try again).
+  //   if (isnan(h) || isnan(t) || isnan(f)) {
+  //     Serial.println(F("Failed to read from DHT sensor!"));
+  //     return;
+  //   }
 
 
-  if (millis()-t1 >= 250){
-    //int CMON_out = analogRead(CMON_PIN);
-    //Serial.println(CMON_out);
-    // Reading temperature or humidity takes about 250 milliseconds!
-    // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
-    float h = dht.readHumidity();
-    // Read temperature as Celsius (the default)
-    float t = dht.readTemperature();
-    // Read temperature as Fahrenheit (isFahrenheit = true)
-    float f = dht.readTemperature(true);
+  //   // Compute heat index in Fahrenheit (the default)
+  //   float hif = dht.computeHeatIndex(f, h);
+  //   // Compute heat index in Celsius (isFahreheit = false)
+  //   float hic = dht.computeHeatIndex(t, h, false);
 
+  //   // read a reference value from A0 and map it from 0 to 100
+  //   float real_value = hif*4.8;//Rough Approximation to make the signals comprable
     
+  //   // IR Analog Value
+  //   float measured_value = analogRead(A0)/1024.0 * 100.0;
 
-    // Check if any reads failed and exit early (to try again).
-    if (isnan(h) || isnan(t) || isnan(f)) {
-      Serial.println(F("Failed to read from DHT sensor!"));
-      return;
-    }
+  //   // calculate the estimated value with Kalman Filter function we defined
+  //   float estimated_value = simpleKalmanFilter.updateEstimate(measured_value);
 
+  //   // //Digital IR_val is 1 when no flame and 0 when there is a flame
+  //   // if (estimated_value >= Kalman_Threshold){//Checking Kalman filter value 
+  //   //   digitalWrite(LED_PIN, HIGH);
+  //   //   digitalWrite(IN1, LOW);
+  //   //   digitalWrite(IN2, HIGH);
+  //   // }
+  //   // else{
+  //   //   digitalWrite(LED_PIN, LOW);
+  //   //   digitalWrite(IN1, HIGH);
+  //   //   digitalWrite(IN2, HIGH);
+  //   // }
+  
+  //   Serial.print(real_value,4);
+  //   Serial.print(",");
+  //   Serial.print(measured_value,4);
+  //   Serial.print(",");
+  //   Serial.print(estimated_value,4);
+  //   Serial.println();
 
-    // Compute heat index in Fahrenheit (the default)
-    float hif = dht.computeHeatIndex(f, h);
-    // Compute heat index in Celsius (isFahreheit = false)
-    float hic = dht.computeHeatIndex(t, h, false);
+  //   // send the data to server
+  //   sendDataViaWifi(h, t, f, measured_value, estimated_value, IR_val);
 
-    // read a reference value from A0 and map it from 0 to 100
-    float real_value = hif*4.8;//Rough Approximation to make the signals comprable
-    
-    // IR Analog Value
-    float measured_value = analogRead(A0)/1024.0 * 100.0;
-
-    // calculate the estimated value with Kalman Filter function we defined
-    float estimated_value = simpleKalmanFilter.updateEstimate(measured_value);
-
-    Serial.print(real_value,4);
-    Serial.print(",");
-    Serial.print(measured_value,4);
-    Serial.print(",");
-    Serial.print(estimated_value,4);
-    Serial.println();
-
-    // send the data to server
-    sendDataViaWifi(h, t, f, measured_value, estimated_value, IR_val);
-
-    /*
-    Serial.print(F("Humidity: "));
-    Serial.print(h);
-    Serial.print(F("%  Temperature: "));
-    Serial.print(t);
-    Serial.print(F("°C "));
-    Serial.print(f);
-    Serial.print(F("°F  Heat index: "));
-    Serial.print(hic);
-    Serial.print(F("°C "));
-    Serial.print(hif);
-    Serial.println(F("°F"));
-    //*/
-    t1 = millis();
+  //   /*
+  //   Serial.print(F("Humidity: "));
+  //   Serial.print(h);
+  //   Serial.print(F("%  Temperature: "));
+  //   Serial.print(t);
+  //   Serial.print(F("°C "));
+  //   Serial.print(f);
+  //   Serial.print(F("°F  Heat index: "));
+  //   Serial.print(hic);
+  //   Serial.print(F("°C "));
+  //   Serial.print(hif);
+  //   Serial.println(F("°F"));
+  //   //*/
+  //   t1 = millis();
   }
 
   #ifdef BLE_SETUP
