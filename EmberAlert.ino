@@ -9,12 +9,12 @@ This is a simple prototype to demonstrate the effectiveness of multiple small co
 
 *///----------------------------------------------------------------------
 
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
+#include <WiFi.h>
+#include <HTTPClient.h>
 
 // ------------------- Wi-Fi credentials -------------------
-const char* ssid = "WIFI_SSID"; // need to edit to specific WiFi
-const char* password = "WIFI_PASS";
+const char* ssid = "TFiPhone"; // need to edit to specific WiFi
+const char* password = "Scotchkiss2010soul!";
 
 // ------------------- Server endpoint -------------------
 String serverPath = "http://SERVER_IP:5050/receive"; // this will be different for different computers
