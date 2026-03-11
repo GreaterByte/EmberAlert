@@ -8,8 +8,8 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "C:/Users/farao/OneDrive/Desktop/EmberAlert/Sender_Test/include",
-                "C:/Users/farao/OneDrive/Desktop/EmberAlert/Sender_Test/src",
+                "C:/Users/farao/OneDrive/Documents/PlatformIO/Projects/Sender_Test/include",
+                "C:/Users/farao/OneDrive/Documents/PlatformIO/Projects/Sender_Test/src",
                 "C:/Users/farao/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                 "C:/Users/farao/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/newlib/platform_include",
                 "C:/Users/farao/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/freertos/include",
@@ -247,8 +247,8 @@
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "C:/Users/farao/OneDrive/Desktop/EmberAlert/Sender_Test/include",
-                    "C:/Users/farao/OneDrive/Desktop/EmberAlert/Sender_Test/src",
+                    "C:/Users/farao/OneDrive/Documents/PlatformIO/Projects/Sender_Test/include",
+                    "C:/Users/farao/OneDrive/Documents/PlatformIO/Projects/Sender_Test/src",
                     "C:/Users/farao/.platformio/packages/framework-arduinoespressif32/libraries/WiFi/src",
                     "C:/Users/farao/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/newlib/platform_include",
                     "C:/Users/farao/.platformio/packages/framework-arduinoespressif32/tools/sdk/esp32s3/include/freertos/include",
